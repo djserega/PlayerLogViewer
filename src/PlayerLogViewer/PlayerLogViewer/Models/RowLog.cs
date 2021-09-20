@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace PlayerLogViewer.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public bool IsError { get; set; }
-        public List<string> Rows { get; set; } = new List<string>();
+        public ObservableCollection<RowLowRowsData> Rows { get; set; } = new ObservableCollection<RowLowRowsData>();
 
         public void Save()
         {
@@ -26,7 +27,7 @@ namespace PlayerLogViewer.Models
 
             for (int i = 0; i < Rows.Count; i++)
             {
-                if (string.IsNullOrWhiteSpace(Rows[i]))
+                if (string.IsNullOrWhiteSpace(Rows[i].Header))
                 {
                     Rows.RemoveAt(i);
                     i--;
@@ -36,7 +37,7 @@ namespace PlayerLogViewer.Models
             }
 
             if (Rows.Count > 0)
-                SetNewName(Rows[0]);
+                SetNewName(Rows[0].Header);
         }
 
         private void SetNewName(string firstRow)

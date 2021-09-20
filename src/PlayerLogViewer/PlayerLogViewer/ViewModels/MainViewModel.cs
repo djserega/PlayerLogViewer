@@ -1,4 +1,5 @@
 ﻿using DevExpress.Mvvm;
+using GalaSoft.MvvmLight.Threading;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -16,6 +18,26 @@ namespace PlayerLogViewer.ViewModels
 {
     internal class MainViewModel : BindableBase, ISingleton
     {
+        private int _countSecondTimer;
+        private Timer _timerAutoUpdate;
+
+        public MainViewModel()
+        {
+            _timerAutoUpdate = new Timer();
+            _timerAutoUpdate.Elapsed += TimerAutoUpdate_Elapsed;
+
+            SetTimerInterval();
+        }
+
+        private void TimerAutoUpdate_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(
+                  async () =>
+                  {
+                      await LoadPlayerLog();
+                  });
+        }
+
         public bool OnlyIsError { get; set; }
         public ICommand OnlyIsErrorChangeCommand { get => new DelegateCommand(() => SetFilterListLogView()); }
         public Models.RowLog SelectedListLog { get; set; }
@@ -23,12 +45,39 @@ namespace PlayerLogViewer.ViewModels
         public ObservableCollection<Models.RowLog> ListLog { get; } = new ObservableCollection<Models.RowLog>();
         public ICommand ReadPlayerLogCommand { get => new AsyncCommand(async () => await LoadPlayerLog()); }
         public ICommand OpenLogFileCommand { get => new DelegateCommand(() => OpenLogFile()); }
+        public int CountSecondTimer
+        {
+            get => _countSecondTimer;
+            set
+            {
+                if (value >= 0)
+                {
+                    _countSecondTimer = value;
+                    SetTimerInterval();
+                }
+            }
+        }
+        public bool TimerIsActive { get; set; }
+
+        private void SetTimerInterval()
+        {
+            TimerIsActive = false;
+            _timerAutoUpdate.Stop();
+
+            if (CountSecondTimer > 0)
+            {
+                _timerAutoUpdate.Interval = CountSecondTimer * 1000;
+                _timerAutoUpdate.Start();
+                TimerIsActive = true;
+            }
+        }
 
         private async Task LoadPlayerLog()
         {
-            Logger.Inf("[Command] LoadPlayerLog");
+            if (TimerIsActive)
+                _timerAutoUpdate.Stop();
 
-            ListLog.Clear();
+            Logger.Inf("[Command] LoadPlayerLog");
 
             string? path = GetFileLogPath();
 
@@ -62,7 +111,7 @@ namespace PlayerLogViewer.ViewModels
                         line = await reader.ReadLineAsync();
                         i++;
 
-                        if (line != null)
+                        if (!string.IsNullOrWhiteSpace(line))
                             readedData.Insert(0, line);
                     }
                     while (line != null);
@@ -73,10 +122,12 @@ namespace PlayerLogViewer.ViewModels
 
             Logger.Inf("Processed data");
 
+            ListLog.Clear();
+
             Models.RowLog? currentLog = default;
-            foreach (string row in readedData)
+            foreach (string textRow in readedData)
             {
-                if (row.StartsWith("(Filename:"))
+                if (textRow.StartsWith("(Filename:"))
                 {
                     if (currentLog != null)
                         currentLog.Save();
@@ -86,7 +137,7 @@ namespace PlayerLogViewer.ViewModels
                 }
                 else if (currentLog != null)
                 {
-                    currentLog.Rows.Insert(0, row);
+                    currentLog.Rows.Insert(0, new Models.RowLowRowsData(textRow));
                 }
             }
 
@@ -98,6 +149,9 @@ namespace PlayerLogViewer.ViewModels
             ListLogView = CollectionViewSource.GetDefaultView(ListLog);
 
             SetFilterListLogView();
+
+            if (TimerIsActive)
+                _timerAutoUpdate.Start();
         }
 
         private void OpenLogFile()
