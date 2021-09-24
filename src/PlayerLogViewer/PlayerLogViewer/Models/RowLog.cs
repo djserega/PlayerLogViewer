@@ -9,7 +9,7 @@ namespace PlayerLogViewer.Models
 {
     internal class RowLog
     {
-        public RowLog() 
+        public RowLog()
         { }
         public RowLog(int id) : this()
         {
@@ -18,7 +18,9 @@ namespace PlayerLogViewer.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public bool IsMarkedRow { get; set; }
         public bool IsError { get; set; }
+        public bool IsCriticalError { get; set; }
         public ObservableCollection<RowLowRowsData> Rows { get; set; } = new ObservableCollection<RowLowRowsData>();
 
         public void Save()
@@ -64,8 +66,14 @@ namespace PlayerLogViewer.Models
             }
             else if (firstRow.StartsWith("NullReferenceException:")
                 || firstRow.StartsWith("KeyNotFoundException:")
-                || firstRow.StartsWith("ArgumentNullException:")
-                || Contains(firstRow, "Failed")
+                || firstRow.StartsWith("ArgumentNullException:"))
+            {
+                Name = "Критическая ошибка";
+
+                IsCriticalError = true;
+                IsMarkedRow = true;
+            }
+            else if (Contains(firstRow, "Failed")
                 || Contains(firstRow, "is missing")
                 || Contains(firstRow, "Error")
                 || Contains(firstRow, "not found")
@@ -78,6 +86,7 @@ namespace PlayerLogViewer.Models
                     Name += ". Не найден скрипт";
 
                 IsError = true;
+                IsMarkedRow = true;
             }
             else if (firstRow.StartsWith("[Vivox Manager]")
                 || firstRow.StartsWith("[Vivox Channel]"))
@@ -103,7 +112,7 @@ namespace PlayerLogViewer.Models
                     Name = "Vivox групповой чат отключен";
                 else if (Contains(firstRow, "party", "connection"))
                     Name = "Vivox коммандный (игровой) чат подключен";
-                
+
                 else if (Contains(firstRow, "team-", "disconnecting"))
                     Name = "Vivox попытка отключения от коммандного (игрового) чата";
                 else if (Contains(firstRow, "team-", "disconnected"))
@@ -112,10 +121,10 @@ namespace PlayerLogViewer.Models
                     Name = "Vivox попытка подключения к коммандному (игровому) чату";
                 else if (Contains(firstRow, "team-", "connected"))
                     Name = "Vivox коммандный (игровой) чат подключен";
-                
+
                 else if (Contains(firstRow, "Emtpy session", "connection"))
                     Name = "Vivox обнуление сессии";
-                else if (Contains(firstRow, "Channel",  "finalization"))
+                else if (Contains(firstRow, "Channel", "finalization"))
                     Name = "Канал связи разорван";
             }
             else if (firstRow.StartsWith("Keepalive request"))
@@ -204,7 +213,7 @@ namespace PlayerLogViewer.Models
             {
                 if (!row.Contains(item))
                 {
-                    allContains= false;
+                    allContains = false;
                     break;
                 }
             }

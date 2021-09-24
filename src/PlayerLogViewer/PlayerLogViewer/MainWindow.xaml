@@ -32,18 +32,23 @@
                           Margin="5 0"
                           IsChecked="{Binding OnlyIsError}"
                           Command="{Binding OnlyIsErrorChangeCommand}"/>
-                <Button Grid.Column="2"
+                <CheckBox Grid.Column="2"
+                          Content="Только критические ошибки"
+                          Margin="5 0"
+                          IsChecked="{Binding OnlyIsCriticalError}"
+                          Command="{Binding OnlyIsErrorChangeCommand}"/>
+                <Button Grid.Column="3"
                         Content="Открыть лог файл"
                         Command="{Binding OpenLogFileCommand}"/>
-                <Label Grid.Column="3"
+                <Label Grid.Column="4"
                        VerticalContentAlignment="Center"
                        Content="Таймер:"/>
-                <TextBox Grid.Column="4"
+                <TextBox Grid.Column="5"
                          Width="30"
                          VerticalContentAlignment="Center"
                          HorizontalContentAlignment="Center"
                          Text="{Binding CountSecondTimer}"/>
-                <CheckBox Grid.Column="5"
+                <CheckBox Grid.Column="6"
                          IsEnabled="False"
                          VerticalAlignment="Center"
                          IsChecked="{Binding TimerIsActive}"/>
@@ -67,10 +72,20 @@
                     <DataGrid.RowStyle>
                         <Style TargetType="{x:Type DataGridRow}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsError}" Value="true">
+                                <DataTrigger Binding="{Binding IsMarkedRow}" Value="true">
                                     <Setter Property="Foreground" Value="Red"/>
                                     <Setter Property="FontWeight" Value="DemiBold"/>
                                 </DataTrigger>
+                                <!--MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsError}" Value="true"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsCriticalError}" Value="true"/>
+                                    </MultiTrigger.Conditions>
+                                    --><!--<MultiTrigger.Setters>--><!--
+                                        <Setter Property="Foreground" Value="Red"/>
+                                        <Setter Property="FontWeight" Value="DemiBold"/>
+                                    --><!--</MultiTrigger.Setters>--><!--
+                                </MultiTrigger>-->
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>

@@ -42,6 +42,7 @@ namespace PlayerLogViewer.ViewModels
 
         public bool OnlyIsError { get; set; }
         public ICommand OnlyIsErrorChangeCommand { get => new DelegateCommand(() => SetFilterListLogView()); }
+        public bool OnlyIsCriticalError { get; set; }
         public Models.RowLog SelectedListLog { get; set; }
         public ICollectionView ListLogView { get; set; }
         public ObservableCollection<Models.RowLog> ListLog { get; } = new ObservableCollection<Models.RowLog>();
@@ -201,7 +202,10 @@ namespace PlayerLogViewer.ViewModels
         {
             Logger.Inf("Set filter: OnlyIsError - {Error}", OnlyIsError);
 
-            ListLogView.Filter = el => !OnlyIsError || (((Models.RowLog)el).IsError && OnlyIsError);
+            ListLogView.Filter = el => 
+                (!OnlyIsError && !OnlyIsCriticalError) 
+                || (((Models.RowLog)el).IsError && OnlyIsError)
+                || (((Models.RowLog)el).IsCriticalError && OnlyIsCriticalError);
         }
     }
 }
