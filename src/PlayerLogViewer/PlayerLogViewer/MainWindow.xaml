@@ -8,95 +8,101 @@
         mc:Ignorable="d"
         Title="Playerlog viewer" Height="700" Width="1500">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0"
-              Margin="10 2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                    Content="Read logs"
-                    Command="{Binding ReadPlayerLogCommand}"/>
-            <CheckBox Grid.Column="1"
-                      Content="Только ошибки"
-                      Margin="5 0"
-                      IsChecked="{Binding OnlyIsError}"
-                      Command="{Binding OnlyIsErrorChangeCommand}"/>
-            <Button Grid.Column="2"
-                    Content="Открыть лог файл"
-                    Command="{Binding OpenLogFileCommand}"/>
-            <Label Grid.Column="3"
-                   VerticalContentAlignment="Center"
-                   Content="Таймер:"/>
-            <TextBox Grid.Column="4"
-                     Width="30"
-                     VerticalContentAlignment="Center"
-                     HorizontalContentAlignment="Center"
-                     Text="{Binding CountSecondTimer}"/>
-            <CheckBox Grid.Column="5"
-                      IsEnabled="False"
-                      VerticalAlignment="Center"
-                      IsChecked="{Binding TimerIsActive}"/>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" MaxWidth="300"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <DataGrid Grid.Column="0"
-                      ItemsSource="{Binding ListLogView}"
-                      SelectedValue="{Binding SelectedListLog}"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      SelectionMode="Single"
-                      CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Id" Binding="{Binding Id}" MaxWidth="70"/>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" MaxWidth="210"/>
-                </DataGrid.Columns>
-                <DataGrid.RowStyle>
-                    <Style TargetType="{x:Type DataGridRow}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsError}" Value="true">
-                                <Setter Property="Foreground" Value="Red"/>
-                                <Setter Property="FontWeight" Value="DemiBold"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
-            </DataGrid>
-            <Grid Grid.Column="1"
-                  HorizontalAlignment="Left">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0"
+                  Margin="10 2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <DataGrid IsReadOnly="True"
+                <Button Grid.Column="0"
+                        Content="Read logs"
+                        Command="{Binding ReadPlayerLogCommand}"/>
+                <CheckBox Grid.Column="1"
+                          Content="Только ошибки"
+                          Margin="5 0"
+                          IsChecked="{Binding OnlyIsError}"
+                          Command="{Binding OnlyIsErrorChangeCommand}"/>
+                <Button Grid.Column="2"
+                        Content="Открыть лог файл"
+                        Command="{Binding OpenLogFileCommand}"/>
+                <Label Grid.Column="3"
+                       VerticalContentAlignment="Center"
+                       Content="Таймер:"/>
+                <TextBox Grid.Column="4"
+                         Width="30"
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Center"
+                         Text="{Binding CountSecondTimer}"/>
+                <CheckBox Grid.Column="5"
+                         IsEnabled="False"
+                         VerticalAlignment="Center"
+                         IsChecked="{Binding TimerIsActive}"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <DataGrid Grid.Column="0"
+                          ItemsSource="{Binding ListLogView}"
+                          SelectedValue="{Binding SelectedListLog}"
                           AutoGenerateColumns="False"
-                          CanUserSortColumns="False"
-                          ItemsSource="{Binding SelectedListLog.Rows}">
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          CanUserSortColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Header" Binding="{Binding Header}"/>
-                        <!--<DataGridTextColumn Header="Data" Binding="{Binding Data}"/>-->
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" MaxWidth="70"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" MaxWidth="400"/>
                     </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="{x:Type DataGridRow}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsError}" Value="true">
+                                    <Setter Property="Foreground" Value="Red"/>
+                                    <Setter Property="FontWeight" Value="DemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
                 </DataGrid>
-                <!--<ListView ItemsSource="{Binding SelectedListLog.Rows}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Header}"
-                                       TextWrapping="WrapWithOverflow"/>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>-->
+                <Grid Grid.Column="1"
+                      HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <DataGrid IsReadOnly="True"
+                              AutoGenerateColumns="False"
+                              CanUserSortColumns="False"
+                              ItemsSource="{Binding SelectedListLog.Rows}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Header" Binding="{Binding Header}"/>
+                            <!--<DataGridTextColumn Header="Data" Binding="{Binding Data}"/>-->
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </Grid>
         </Grid>
+        <ProgressBar Visibility="{Binding VisibilityProgressLoading}"
+                     Style="{StaticResource MaterialDesignCircularProgressBar}"
+                     Height="70"
+                     Width="70"
+                     Value="0"
+                     IsIndeterminate="True"/>
+        <TextBlock Text="{Binding LogfilePath}"
+                   VerticalAlignment="Bottom"
+                   HorizontalAlignment="Right"
+                   FontSize="15"
+                   Margin="0 0 20 18"
+                   Opacity=".3"/>
     </Grid>
 </Window>

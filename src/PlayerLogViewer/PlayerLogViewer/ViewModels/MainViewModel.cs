@@ -27,6 +27,8 @@ namespace PlayerLogViewer.ViewModels
             _timerAutoUpdate.Elapsed += TimerAutoUpdate_Elapsed;
 
             SetTimerInterval();
+
+            LogfilePath = GetFileLogPath();
         }
 
         private void TimerAutoUpdate_Elapsed(object sender, ElapsedEventArgs e)
@@ -58,6 +60,8 @@ namespace PlayerLogViewer.ViewModels
             }
         }
         public bool TimerIsActive { get; set; }
+        public Visibility VisibilityProgressLoading { get; set; } = Visibility.Collapsed;
+        public string LogfilePath { get; set; }
 
         private void SetTimerInterval()
         {
@@ -78,6 +82,8 @@ namespace PlayerLogViewer.ViewModels
                 _timerAutoUpdate.Stop();
 
             Logger.Inf("[Command] LoadPlayerLog");
+
+            VisibilityProgressLoading = Visibility.Visible;
 
             string? path = GetFileLogPath();
 
@@ -105,11 +111,9 @@ namespace PlayerLogViewer.ViewModels
                     _ = reader.BaseStream.Seek(-readingByte, SeekOrigin.End);
 
                     string? line;
-                    int i = 0;
                     do
                     {
                         line = await reader.ReadLineAsync();
-                        i++;
 
                         if (!string.IsNullOrWhiteSpace(line))
                             readedData.Insert(0, line);
@@ -149,6 +153,8 @@ namespace PlayerLogViewer.ViewModels
             ListLogView = CollectionViewSource.GetDefaultView(ListLog);
 
             SetFilterListLogView();
+
+            VisibilityProgressLoading = Visibility.Collapsed;
 
             if (TimerIsActive)
                 _timerAutoUpdate.Start();

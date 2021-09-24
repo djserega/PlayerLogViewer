@@ -67,6 +67,9 @@ namespace PlayerLogViewer.Models
                 || firstRow.StartsWith("ArgumentNullException:")
                 || Contains(firstRow, "Failed")
                 || Contains(firstRow, "is missing")
+                || Contains(firstRow, "Error")
+                || Contains(firstRow, "not found")
+                || Contains(firstRow, "not be found")
                 )
             {
                 Name = "Ошибка";
@@ -167,6 +170,29 @@ namespace PlayerLogViewer.Models
             {
                 if (Contains(firstRow, "Bundle", "unloaded"))
                     Name = "Выгрузка текстур";
+            }
+            else if (firstRow.StartsWith("------------Loading:"))
+            {
+                Name = "Загрузка карты";
+            }
+            else if (firstRow.StartsWith("[Game Application]"))
+            {
+                if (Contains(firstRow, "Setting module"))
+                    Name = "Подключен модуль: " + firstRow["[Game Application] Setting module ".Length..];
+                else if (Contains(firstRow, "Switching from"))
+                    Name = "Переключение с модуля: " + firstRow["[Game Application] Switching from ".Length..];
+            }
+            else if (firstRow.StartsWith("[Client]"))
+            {
+                if (Contains(firstRow, "Disconnected"))
+                    Name = "Клиент отключен";
+                else if (Contains(firstRow, "Connected"))
+                    Name = "Клиент подключен";
+            }
+            else if (firstRow.StartsWith("Unloading"))
+            {
+                if (Contains(firstRow, "Assets", "reduce memory usage"))
+                    Name = "Выгрузка ресурсов";
             }
         }
 
