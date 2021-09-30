@@ -47,7 +47,18 @@
                          Width="30"
                          VerticalContentAlignment="Center"
                          HorizontalContentAlignment="Center"
-                         Text="{Binding CountSecondTimer}"/>
+                         Text="{Binding CountSecondTimer}">
+                    <TextBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Выключить" Command="{Binding ContextMenuTimerCommand}" CommandParameter="{x:Null}"/>
+                            <MenuItem Header="5 секунд" Command="{Binding ContextMenuTimerCommand}" CommandParameter="5"/>
+                            <MenuItem Header="10 секунд" Command="{Binding ContextMenuTimerCommand}" CommandParameter="10"/>
+                            <MenuItem Header="15 секунд" Command="{Binding ContextMenuTimerCommand}" CommandParameter="15"/>
+                            <MenuItem Header="30 секунд" Command="{Binding ContextMenuTimerCommand}" CommandParameter="30"/>
+                            <MenuItem Header="60 секунд" Command="{Binding ContextMenuTimerCommand}" CommandParameter="60"/>
+                        </ContextMenu>
+                    </TextBox.ContextMenu>
+                </TextBox>
                 <CheckBox Grid.Column="6"
                          IsEnabled="False"
                          VerticalAlignment="Center"

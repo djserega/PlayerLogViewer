@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -36,6 +35,7 @@ namespace PlayerLogViewer.ViewModels
             DispatcherHelper.CheckBeginInvokeOnUI(
                   async () =>
                   {
+                      Logger.Inf("[Timer] Elapsed time");
                       await LoadPlayerLog();
                   });
         }
@@ -43,11 +43,13 @@ namespace PlayerLogViewer.ViewModels
         public bool OnlyIsError { get; set; }
         public ICommand OnlyIsErrorChangeCommand { get => new DelegateCommand(() => SetFilterListLogView()); }
         public bool OnlyIsCriticalError { get; set; }
+
         public Models.RowLog SelectedListLog { get; set; }
         public ICollectionView ListLogView { get; set; }
         public ObservableCollection<Models.RowLog> ListLog { get; } = new ObservableCollection<Models.RowLog>();
         public ICommand ReadPlayerLogCommand { get => new AsyncCommand(async () => await LoadPlayerLog()); }
         public ICommand OpenLogFileCommand { get => new DelegateCommand(() => OpenLogFile()); }
+
         public int CountSecondTimer
         {
             get => _countSecondTimer;
@@ -61,8 +63,18 @@ namespace PlayerLogViewer.ViewModels
             }
         }
         public bool TimerIsActive { get; set; }
+        public ICommand ContextMenuTimerCommand
+        {
+            get => new DelegateCommand<string>((string second) =>
+            {
+                CountSecondTimer = string.IsNullOrEmpty(second) ? 0 : int.Parse(second);
+            });
+        }
+
         public Visibility VisibilityProgressLoading { get; set; } = Visibility.Collapsed;
         public string LogfilePath { get; set; }
+
+
 
         private void SetTimerInterval()
         {
@@ -75,6 +87,8 @@ namespace PlayerLogViewer.ViewModels
                 _timerAutoUpdate.Start();
                 TimerIsActive = true;
             }
+
+            Logger.Inf("[Timer] Status: {status}, seconds {seconds}", TimerIsActive, CountSecondTimer);
         }
 
         private async Task LoadPlayerLog()
@@ -202,10 +216,13 @@ namespace PlayerLogViewer.ViewModels
         {
             Logger.Inf("Set filter: OnlyIsError - {Error}", OnlyIsError);
 
-            ListLogView.Filter = el => 
-                (!OnlyIsError && !OnlyIsCriticalError) 
-                || (((Models.RowLog)el).IsError && OnlyIsError)
-                || (((Models.RowLog)el).IsCriticalError && OnlyIsCriticalError);
+            if (ListLogView != null)
+            {
+                ListLogView.Filter = el =>
+                  (!OnlyIsError && !OnlyIsCriticalError)
+                  || (((Models.RowLog)el).IsError && OnlyIsError)
+                  || (((Models.RowLog)el).IsCriticalError && OnlyIsCriticalError);
+            }
         }
     }
 }

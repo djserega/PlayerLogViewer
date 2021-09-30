@@ -197,6 +197,8 @@ namespace PlayerLogViewer.Models
                     Name = "Клиент отключен";
                 else if (Contains(firstRow, "Connected"))
                     Name = "Клиент подключен";
+                else if (Contains(firstRow, "Connecting"))
+                    Name = "Подключение клиента к: " + firstRow["[Client] Connecting ".Length..];
             }
             else if (firstRow.StartsWith("Unloading"))
             {
