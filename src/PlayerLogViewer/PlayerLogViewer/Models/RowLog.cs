@@ -127,6 +127,20 @@ namespace PlayerLogViewer.Models
                 else if (Contains(firstRow, "Channel", "finalization"))
                     Name = "Канал связи разорван";
             }
+            else if (firstRow.StartsWith("[Vivox]"))
+            {
+                if (Contains(firstRow, "(ConnectedChannel "))
+                    Name = "Vivox. Подключен канал: " + firstRow["[Vivox][log_info] (ConnectedChannel".Length..].Trim(')', '{', '}');
+                else if (Contains(firstRow, "(ConnectingChannel"))
+                    Name = "Vivox. Попытка подключения к каналу";
+
+                else if (Contains(firstRow, "(DisconnectingAccount )"))
+                    Name = "Vivox. Отключение аккаунта";
+                else if (Contains(firstRow, "(DisconnectedChannel "))
+                    Name = "Vivox. Отключен канал:" + firstRow["[Vivox][log_info] (DisconnectedChannel ".Length..].Trim(')', '{', '}');
+                else if (Contains(firstRow, "(DestroyConnector "))
+                    Name = "Vivox. Уничтожен коннектор: " + firstRow["[Vivox][log_info] (DestroyConnector ".Length..].Trim(')', '{', '}');
+            }
             else if (firstRow.StartsWith("Keepalive request"))
             {
                 Name = "Запрос на сохранение к серверу";
@@ -171,6 +185,11 @@ namespace PlayerLogViewer.Models
             {
                 Name = "Выгружены ресурсы: " + firstRow["UnloadTime:".Length..];
             }
+            else if (firstRow.StartsWith("Unloading"))
+            {
+                if (Contains(firstRow, "Serialized files"))
+                    Name = "Выгружены файлы ресурсов";
+            }
             else if (firstRow.StartsWith("GC.Collect"))
             {
                 Name = "Сборка мусора";
@@ -204,6 +223,22 @@ namespace PlayerLogViewer.Models
             {
                 if (Contains(firstRow, "Assets", "reduce memory usage"))
                     Name = "Выгрузка ресурсов";
+            }
+            else if (firstRow.StartsWith("Notification PARTYINVITE ignored"))
+            {
+                if (Contains(firstRow, "Duplicate notification"))
+                    Name = "Приглашение в команду. Дубль уведомления";
+            }
+            else if (Contains(firstRow, "[CDS Manager]"))
+            {
+                Name = "[CDS Manager]...";
+            }
+            else if (Contains(firstRow, "state:"))
+            {
+                bool inBattle = firstRow.Contains("inBattle:False");
+                bool isLoggedIn = firstRow.Contains("isLoggerIn:True");
+
+                Name = $"В бою: {inBattle} Залогинен: {isLoggedIn}";
             }
         }
 
