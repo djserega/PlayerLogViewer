@@ -162,6 +162,8 @@ namespace PlayerLogViewer.Models
             {
                 if (Contains(firstRow, "Indexing completed"))
                     Name = "Индексирование реплеев";
+                else if (Contains(firstRow, "Indexing started"))
+                    Name = "Найдено реплеев: " + GetTextBetween(firstRow, "[Replay Storage] Indexing started: ");
             }
             else if (firstRow.StartsWith("Language:"))
             {
@@ -188,7 +190,9 @@ namespace PlayerLogViewer.Models
             else if (firstRow.StartsWith("Unloading"))
             {
                 if (Contains(firstRow, "Serialized files"))
-                    Name = "Выгружены файлы ресурсов";
+                    Name = "Выгружены файлы: " + GetTextBetween(firstRow, "Unloading ");
+                if (Contains(firstRow, "Assets"))
+                    Name = "Выгружены ресурсы: " + GetTextBetween(firstRow, "Unloading ");
             }
             else if (firstRow.StartsWith("GC.Collect"))
             {
@@ -240,6 +244,15 @@ namespace PlayerLogViewer.Models
 
                 Name = $"В бою: {inBattle} Залогинен: {isLoggedIn}";
             }
+        }
+
+        private string GetTextBetween(string sourse, string start, string end = " ")
+        {
+            string text = sourse[start.Length..];
+            int posSpace = text.IndexOf(end);
+            text = text[..posSpace];
+
+            return text;
         }
 
         private bool Contains(string row, params string[] param)
